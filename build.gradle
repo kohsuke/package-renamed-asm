@@ -1,10 +1,11 @@
 // useful example: http://svn.codehaus.org/groovy/branches/GROOVY_1_8_X/gradle/assemble.gradle
 apply plugin:"java"
 apply plugin:"maven"
+apply plugin:"signing"
 
 majorVersion="3"
 group="org.kohsuke"
-version="3.3.1";
+version="3.3.0";
 description="ObjectWeb ASM package-renamed to isolate incompatibilities between major versions";
 
 p=project   // to avoid name conflict
@@ -22,50 +23,54 @@ configurations {
 
 dependencies {
     tools "com.googlecode.jarjar:jarjar:1.1"
-    repackage "asm:asm-debug-all:${version}"
-    sourceJar "asm:asm-debug-all:${version}:sources"
-    javadocJar "asm:asm:${version}:javadoc"
+    repackage  "com.jolira:asm:${version}"
+    sourceJar  "com.jolira:asm:${version}:sources"
+    javadocJar "com.jolira:asm:${version}:javadoc"
 }
 
 def resolve(name) {
     configurations[name].files.iterator().next()
 }
 
-jar.doLast {
-    project.ant {
-        taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
-        jarjar(jarfile: jar.archivePath) {
-            configurations.repackage.files.each {jar ->
-                zipfileset(src: jar)
+def jarjar(task,configName) {
+    task.doLast {
+        task.project.ant {
+            taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
+            jarjar(jarfile: task.archivePath) {
+                configurations[configName].files.each {jar ->
+                    zipfileset(src: jar)
+                }
+                rule pattern: "org.objectweb.asm.**", result: p.group+".asm${majorVersion}.@1" // "org.kohsuke.asm${majorVersion}.@1"
             }
-            rule pattern: "org.objectweb.asm.**", result: p.group+".@1" // "org.kohsuke.asm${majorVersion}.@1"
         }
     }
+}
+
+jar {
+    jarjar(delegate,"repackage")
 }
 
 task renamedSourceJar(type:Jar) {
-    archiveBaseName = "sources";
-    project.ant {
-        taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
-        jarjar(jarfile: jar.archivePath) {
-            configurations.sourceJar.files.each {jar ->
-                zipfileset(src: jar)
-            }
-            rule pattern: "org.objectweb.asm.**", result: p.group+".@1" // "org.kohsuke.asm${majorVersion}.@1"
-        }
-    }
+    classifier = "souces"
+    jarjar(delegate,"sourceJar")
 }
 
-task emptyJavadocJar(type:Jar) {}
+task emptyJavadocJar(type:Jar) {
+    classifier = "javadoc"
+}
 
 artifacts {
     archives(renamedSourceJar) {
         classifier = "sources"
     }
-    // archives (resolve("javadocJar")) {
-    archives (emptyJavadocJar) {
+    archives (resolve("javadocJar")) {
+//    archives (emptyJavadocJar) {
         classifier = "javadoc"
     }
+}
+
+signing {
+    sign configurations.archives
 }
 
 
@@ -82,6 +87,11 @@ customizePom = {
                     url = "http://asm.ow2.org/license.html"
                 }
             }
+            developers {
+                developer {
+                    id = "kohsuke"
+                }
+            }
         }
     }
 }
@@ -89,7 +99,8 @@ install.repositories.mavenInstaller(customizePom)
 uploadArchives.repositories.mavenDeployer(customizePom)
 
 uploadArchives.repositories.mavenDeployer {
+    beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
     repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/", id:"sonatype-nexus-staging") {
-        authentication(userName:"kohsuke", password:"") // (new BufferedReader(new InputStreamReader(System.in)).readLine()))
+        authentication(userName:"kohsuke", password:System.getProperty("password"))
     }
 }
