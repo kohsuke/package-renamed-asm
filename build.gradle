@@ -1,0 +1,95 @@
+// useful example: http://svn.codehaus.org/groovy/branches/GROOVY_1_8_X/gradle/assemble.gradle
+apply plugin:"java"
+apply plugin:"maven"
+
+majorVersion="3"
+group="org.kohsuke"
+version="3.3.1";
+description="ObjectWeb ASM package-renamed to isolate incompatibilities between major versions";
+
+p=project   // to avoid name conflict
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    tools
+    repackage
+    sourceJar
+    javadocJar
+}
+
+dependencies {
+    tools "com.googlecode.jarjar:jarjar:1.1"
+    repackage "asm:asm-debug-all:${version}"
+    sourceJar "asm:asm-debug-all:${version}:sources"
+    javadocJar "asm:asm:${version}:javadoc"
+}
+
+def resolve(name) {
+    configurations[name].files.iterator().next()
+}
+
+jar.doLast {
+    project.ant {
+        taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
+        jarjar(jarfile: jar.archivePath) {
+            configurations.repackage.files.each {jar ->
+                zipfileset(src: jar)
+            }
+            rule pattern: "org.objectweb.asm.**", result: p.group+".@1" // "org.kohsuke.asm${majorVersion}.@1"
+        }
+    }
+}
+
+task renamedSourceJar(type:Jar) {
+    archiveBaseName = "sources";
+    project.ant {
+        taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
+        jarjar(jarfile: jar.archivePath) {
+            configurations.sourceJar.files.each {jar ->
+                zipfileset(src: jar)
+            }
+            rule pattern: "org.objectweb.asm.**", result: p.group+".@1" // "org.kohsuke.asm${majorVersion}.@1"
+        }
+    }
+}
+
+task emptyJavadocJar(type:Jar) {}
+
+artifacts {
+    archives(renamedSourceJar) {
+        classifier = "sources"
+    }
+    // archives (resolve("javadocJar")) {
+    archives (emptyJavadocJar) {
+        classifier = "javadoc"
+    }
+}
+
+
+customizePom = {
+    pom {
+        artifactId = "asm${majorVersion}"
+        name = "asm${majorVersion}"
+        project {
+            description = p.description
+            url = "http://kohsuke.org/";
+            licenses {
+                license {
+                    name = "BSD License"
+                    url = "http://asm.ow2.org/license.html"
+                }
+            }
+        }
+    }
+}
+install.repositories.mavenInstaller(customizePom)
+uploadArchives.repositories.mavenDeployer(customizePom)
+
+uploadArchives.repositories.mavenDeployer {
+    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/", id:"sonatype-nexus-staging") {
+        authentication(userName:"kohsuke", password:"") // (new BufferedReader(new InputStreamReader(System.in)).readLine()))
+    }
+}
