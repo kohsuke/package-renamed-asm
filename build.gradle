@@ -50,23 +50,24 @@ jar {
     jarjar(delegate,"repackage")
 }
 
-task renamedSourceJar(type:Jar) {
-    classifier = "souces"
-    jarjar(delegate,"sourceJar")
+task emptySourceJar(type:Jar) {
+    classifier = "sources"
 }
-
 task emptyJavadocJar(type:Jar) {
     classifier = "javadoc"
 }
 
 artifacts {
+    archives (emptySourceJar) {
+        classifier = "sources";
+    }
 //    archives(renamedSourceJar) {
 //        classifier = "sources"
 //    }
 //    archives (resolve("javadocJar")) {
-//    archives (emptyJavadocJar) {
-//        classifier = "javadoc"
-//    }
+    archives (emptyJavadocJar) {
+        classifier = "javadoc"
+    }
 }
 
 signing {
