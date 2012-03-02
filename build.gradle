@@ -3,9 +3,9 @@ apply plugin:"java"
 apply plugin:"maven"
 apply plugin:"signing"
 
-majorVersion="3"
+majorVersion="4"
 group="org.kohsuke"
-version="3.3.0";
+version="4.0";
 description="ObjectWeb ASM package-renamed to isolate incompatibilities between major versions";
 
 p=project   // to avoid name conflict
@@ -23,9 +23,9 @@ configurations {
 
 dependencies {
     tools "com.googlecode.jarjar:jarjar:1.1"
-    repackage  "com.jolira:asm:${version}"
-    sourceJar  "com.jolira:asm:${version}:sources"
-    javadocJar "com.jolira:asm:${version}:javadoc"
+    repackage  "org.ow2.asm:asm-debug-all:${version}"
+    sourceJar  "org.ow2.asm:asm-debug-all:${version}:sources"
+    javadocJar "org.ow2.asm:asm-debug-all:${version}:javadoc"
 }
 
 def resolve(name) {
