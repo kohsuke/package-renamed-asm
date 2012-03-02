@@ -92,6 +92,9 @@ customizePom = {
                     id = "kohsuke"
                 }
             }
+            scm {
+                url = "http://github.com/kohsuke/package-renamed-asm";
+            }
         }
     }
 }
