@@ -60,13 +60,13 @@ task emptyJavadocJar(type:Jar) {
 }
 
 artifacts {
-    archives(renamedSourceJar) {
-        classifier = "sources"
-    }
-    archives (resolve("javadocJar")) {
+//    archives(renamedSourceJar) {
+//        classifier = "sources"
+//    }
+//    archives (resolve("javadocJar")) {
 //    archives (emptyJavadocJar) {
-        classifier = "javadoc"
-    }
+//        classifier = "javadoc"
+//    }
 }
 
 signing {
