@@ -3,9 +3,9 @@ apply plugin:"java"
 apply plugin:"maven"
 apply plugin:"signing"
 
-majorVersion="4"
+majorVersion="5"
 group="org.kohsuke"
-version="4.0";
+version="5.0.1";
 description="ObjectWeb ASM package-renamed to isolate incompatibilities between major versions";
 
 p=project   // to avoid name conflict
