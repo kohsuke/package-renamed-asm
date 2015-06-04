@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+
+ <parent>
+    <groupId>org.kohsuke</groupId>
+    <artifactId>pom</artifactId>
+    <version>14</version>
+  </parent>
+
+ <artifactId>asm5</artifactId>
+ <version>5.0.4-SNAPSHOT</version>
+
+ <name>asm5</name>
+ <description>ObjectWeb ASM package-renamed to isolate incompatibilities between major versions</description>
+ <url>http://kohsuke.org/</url>
+ <licenses>
+    <license>
+      <name>BSD License</name>
+      <url>http://asm.ow2.org/license.html</url>
+    </license>
+  </licenses>
+
+ <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+ <scm>
+    <connection>scm:git:git@github.com:kohsuke/package-renamed-asm.git</connection>
+    <developerConnection>scm:git:git@github.com:kohsuke/package-renamed-asm.git</developerConnection>
+  </scm>
+
+ <dependencies>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-debug-all</artifactId>
+      <version>5.0.4</version>
+    </dependency>
+  </dependencies>
+
+ <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
+        <configuration>
+          <includeDependencySources>true</includeDependencySources>
+          <dependencySourceIncludes>
+            <dependencySourceInclude>org.ow2.asm:asm-debug-all</dependencySourceInclude>
+          </dependencySourceIncludes>
+          <additionalparam>-Xdoclint:none</additionalparam>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createSourcesJar>true</createSourcesJar>
+              <relocations>
+                <relocation>
+                  <pattern>org.objectweb.asm</pattern>
+                  <shadedPattern>org.kohsuke.asm5</shadedPattern>
+                </relocation>
+              </relocations>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
