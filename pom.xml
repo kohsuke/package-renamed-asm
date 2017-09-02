@@ -8,10 +8,10 @@
     <version>14</version>
   </parent>
 
- <artifactId>asm5</artifactId>
- <version>5.0.5-SNAPSHOT</version>
+ <artifactId>asm6</artifactId>
+ <version>6.0_BETA-SNAPSHOT</version>
 
- <name>asm5</name>
+ <name>asm6</name>
  <description>ObjectWeb ASM package-renamed to isolate incompatibilities between major versions</description>
  <url>http://kohsuke.org/</url>
  <licenses>
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-debug-all</artifactId>
-      <version>5.0.4</version>
+      <version>6.0_BETA</version>
     </dependency>
   </dependencies>
 
@@ -56,7 +56,7 @@
               <relocations>
                 <relocation>
                   <pattern>org.objectweb.asm</pattern>
-                  <shadedPattern>org.kohsuke.asm5</shadedPattern>
+                  <shadedPattern>org.kohsuke.asm6</shadedPattern>
                 </relocation>
               </relocations>
               <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
@@ -76,7 +76,7 @@
             <configuration>
               <target>
                 <unzip src="${project.build.directory}/${project.build.finalName}-sources.jar" dest="${project.build.directory}/generated-sources/shaded" />
-                <replace dir="${project.build.directory}/generated-sources/shaded" token="org.objectweb.asm" value="org.kohsuke.asm5" includes="**/*.java" />
+                <replace dir="${project.build.directory}/generated-sources/shaded" token="org.objectweb.asm" value="org.kohsuke.asm6" includes="**/*.java" />
               </target>
             </configuration>
           </execution>
