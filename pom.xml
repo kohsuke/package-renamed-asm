@@ -9,7 +9,7 @@
   </parent>
 
  <artifactId>asm6</artifactId>
- <version>6.1_BETA-SNAPSHOT</version>
+ <version>6.0_BETA-2-SNAPSHOT</version>
 
  <name>asm6</name>
  <description>ObjectWeb ASM package-renamed to isolate incompatibilities between major versions</description>
