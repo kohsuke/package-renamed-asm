@@ -9,7 +9,7 @@
   </parent>
 
  <artifactId>asm6</artifactId>
- <version>6.0_BETA-SNAPSHOT</version>
+ <version>6.0_BETA</version>
 
  <name>asm6</name>
  <description>ObjectWeb ASM package-renamed to isolate incompatibilities between major versions</description>
@@ -28,7 +28,7 @@
  <scm>
     <connection>scm:git:git@github.com:kohsuke/package-renamed-asm.git</connection>
     <developerConnection>scm:git:git@github.com:kohsuke/package-renamed-asm.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>asm6-6.0_BETA</tag>
   </scm>
 
  <dependencies>
